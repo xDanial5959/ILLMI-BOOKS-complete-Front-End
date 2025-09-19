@@ -5,26 +5,10 @@ import Image from "next/image";
 
 const ImageSlider = () => {
   const slides = [
-    {
-      id: 1,
-      url: "/Bannerr 1.jpg",
-      alt: "Desert landscape",
-    },
-    {
-      id: 2,
-      url: "/Bannerr 2.jpg",
-      alt: "Mountain view",
-    },
-    {
-      id: 3,
-      url: "/Bannerr 3.jpg",
-      alt: "Beach sunset",
-    },
-    {
-      id: 4,
-      url: "/Bannerr 4.jpg",
-      alt: "Ocean waves",
-    },
+    { id: 1, url: "/Bannerr 1.jpg", alt: "Desert landscape" },
+    { id: 2, url: "/Bannerr 2.jpg", alt: "Mountain view" },
+    { id: 3, url: "/Bannerr 3.jpg", alt: "Beach sunset" },
+    { id: 4, url: "/Bannerr 4.jpg", alt: "Ocean waves" },
   ];
 
   const quotes = [
@@ -91,7 +75,7 @@ const ImageSlider = () => {
     // Educational Quotes
     {
       id: 10,
-      text: "The more that you read, the more things you will know. The more that you learn, the more places you'll go.",
+      text: "The more that you read, the more things you will know. The more that you learn, the more places you&apos;ll go.",
       author: "Dr. Seuss",
       type: "education",
     },
@@ -142,6 +126,7 @@ const ImageSlider = () => {
       type: "islamic",
     },
   ];
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
@@ -167,10 +152,7 @@ const ImageSlider = () => {
     setIsMounted(true);
     setSliderHeight(calculateHeight());
 
-    const handleResize = () => {
-      setSliderHeight(calculateHeight());
-    };
-
+    const handleResize = () => setSliderHeight(calculateHeight());
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [calculateHeight]);
@@ -178,82 +160,70 @@ const ImageSlider = () => {
   const nextSlide = useCallback(() => {
     if (isTransitioning) return;
     setIsTransitioning(true);
-    setCurrentIndex((prevIndex) =>
-      prevIndex === slides.length - 1 ? 0 : prevIndex + 1
+    setCurrentIndex((prev) =>
+      prev === slides.length - 1 ? 0 : prev + 1
     );
   }, [slides.length, isTransitioning]);
 
   const prevSlide = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? slides.length - 1 : prevIndex - 1
+    setCurrentIndex((prev) =>
+      prev === 0 ? slides.length - 1 : prev - 1
     );
   };
 
-  const goToSlide = (slideIndex: number) => {
-    if (isTransitioning || slideIndex === currentIndex) return;
+  const goToSlide = (i: number) => {
+    if (isTransitioning || i === currentIndex) return;
     setIsTransitioning(true);
-    setCurrentIndex(slideIndex);
+    setCurrentIndex(i);
   };
 
   const nextQuote = useCallback(() => {
     setIsQuoteTransitioning(true);
-    setCurrentQuoteIndex((prevIndex) =>
-      prevIndex === quotes.length - 1 ? 0 : prevIndex + 1
+    setCurrentQuoteIndex((prev) =>
+      prev === quotes.length - 1 ? 0 : prev + 1
     );
 
-    if (quoteTimeoutRef.current) {
-      clearTimeout(quoteTimeoutRef.current);
-    }
-    quoteTimeoutRef.current = setTimeout(() => {
-      setIsQuoteTransitioning(false);
-    }, 1000);
+    if (quoteTimeoutRef.current) clearTimeout(quoteTimeoutRef.current);
+    quoteTimeoutRef.current = setTimeout(
+      () => setIsQuoteTransitioning(false),
+      1000
+    );
   }, [quotes.length]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
-
     if (isAutoPlaying) {
       intervalId = setInterval(() => {
         nextSlide();
         nextQuote();
       }, 3000);
     }
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [currentIndex, isAutoPlaying, nextSlide, nextQuote]);
+    return () => clearInterval(intervalId);
+  }, [isAutoPlaying, nextSlide, nextQuote]);
 
   useEffect(() => {
     if (isTransitioning) {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-
-      timeoutRef.current = setTimeout(() => {
-        setIsTransitioning(false);
-      }, 1200);
-
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(
+        () => setIsTransitioning(false),
+        1200
+      );
       return () => {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-        }
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
       };
     }
   }, [isTransitioning]);
 
-  const getSlideAnimationClass = (slideIndex: number) => {
-    if (currentIndex === slideIndex) {
-      return "opacity-100 blur-0 will-change-auto";
-    }
-    return "opacity-0 blur-sm will-change-auto";
-  };
+  const getSlideAnimationClass = (i: number) =>
+    currentIndex === i
+      ? "opacity-100 blur-0 will-change-auto"
+      : "opacity-0 blur-sm will-change-auto";
 
   return (
     <div className="w-full mx-auto">
-      {/* Combined Slider with Quotes Overlay */}
+      {/* Slider Container */}
       <div
         className={`relative w-full mx-auto overflow-hidden will-change-transform ${
           isMounted ? "animate-fadeInScale" : "opacity-0 scale-95"
@@ -264,62 +234,58 @@ const ImageSlider = () => {
         onTouchStart={() => setIsAutoPlaying(false)}
         onTouchEnd={() => setIsAutoPlaying(true)}
       >
-        {/* Slides Container */}
+        {/* Slides */}
         <div className="relative w-full h-full overflow-hidden">
-          {slides.map((slide, slideIndex) => (
+          {slides.map((s, i) => (
             <div
-              key={slide.id}
-              className={`absolute inset-0 w-full h-full transition-all duration-[1200ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${getSlideAnimationClass(
-                slideIndex
-              )}`}
+              key={s.id}
+              className={`absolute inset-0 w-full h-full transition-all duration-[1200ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${getSlideAnimationClass(i)}`}
             >
-              {/* Background image without blur */}
               <Image
-                src={slide.url}
-                alt={slide.alt}
+                src={s.url}
+                alt={s.alt}
                 fill
-                className="object-cover" // Removed blur effect
-                priority={currentIndex === slideIndex}
+                className="object-cover"
+                priority={currentIndex === i}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1400px"
               />
-
-              {/* Green overlay instead of dark overlay */}
-              <div className="absolute inset-0 bg-green-900/30"></div>
+              <div className="absolute inset-0 bg-green-900/30" />
             </div>
           ))}
         </div>
-        {/* Quotes Overlay - Positioned absolutely over the slides */}
+
+        {/* Quotes */}
         <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
           <div className="relative w-full max-w-6xl px-4 md:px-6">
-            {quotes.map((quote, index) => (
+            {quotes.map((q, i) => (
               <div
-                key={quote.id}
+                key={q.id}
                 className={`text-center transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-                  currentQuoteIndex === index
+                  currentQuoteIndex === i
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-4 absolute top-0 left-0 right-0"
                 } ${isQuoteTransitioning ? "scale-95" : "scale-100"}`}
               >
                 <div className="inline-block bg-[#033d3e]/40 backdrop-blur-sm px-6 py-4 md:px-8 md:py-6 rounded-lg">
                   <p className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2 md:mb-3 drop-shadow-lg">
-                    <span className="text-yellow-300">"</span>
+                    <span className="text-yellow-300">&quot;</span>
                     <span
                       className={`inline-block ${
-                        currentQuoteIndex === index ? "animate-textGlow" : ""
+                        currentQuoteIndex === i ? "animate-textGlow" : ""
                       }`}
                       style={{
                         textShadow:
-                          currentQuoteIndex === index
+                          currentQuoteIndex === i
                             ? "0 0 8px rgba(255,255,255,0.8), 0 0 16px rgba(255,215,0,0.6)"
                             : "none",
                       }}
                     >
-                      {quote.text}
+                      {q.text}
                     </span>
-                    <span className="text-yellow-300">"</span>
+                    <span className="text-yellow-300">&quot;</span>
                   </p>
                   <p className="text-sm md:text-base lg:text-lg text-yellow-200 italic">
-                    — {quote.author}
+                    — {q.author}
                   </p>
                 </div>
               </div>
@@ -327,31 +293,29 @@ const ImageSlider = () => {
           </div>
         </div>
 
-        {/* Quote Navigation Dots - Positioned at the top */}
-        <div className="absolute top-4 left-0 right-0 flex justify-center items-center z-20 space-x-2 pointer-events-auto">
-          {quotes.map((_, index) => (
+        {/* Quote Dots */}
+        <div className="absolute top-4 left-0 right-0 flex justify-center z-20 space-x-2">
+          {quotes.map((_, i) => (
             <button
-              key={index}
+              key={i}
               onClick={() => {
-                setCurrentQuoteIndex(index);
+                setCurrentQuoteIndex(i);
                 setIsQuoteTransitioning(true);
                 setTimeout(() => setIsQuoteTransitioning(false), 700);
               }}
-              className={`relative rounded-full transition-all duration-300 ease-out ${
-                currentQuoteIndex === index
+              className={`rounded-full transition-all ${
+                currentQuoteIndex === i
                   ? "w-4 h-2 bg-yellow-300 shadow-[0_0_8px_2px_rgba(255,215,0,0.7)]"
                   : "w-2 h-2 bg-white/50 hover:bg-white/70"
               }`}
-              aria-label={`Go to quote ${index + 1}`}
             />
           ))}
         </div>
 
-        {/* Navigation Arrows - Now Responsive */}
+        {/* Arrows */}
         <button
           onClick={prevSlide}
-          className="absolute left-2 sm:left-4 cursor-pointer top-1/2 -translate-y-1/2 z-20 bg-white/10 text-white p-2 sm:p-3 rounded-full hover:bg-white/20 transition-all duration-300 backdrop-blur-lg border border-white/10 hover:border-white/20 shadow-lg hover:shadow-xl hover:scale-110 active:scale-95 disabled:opacity-50"
-          aria-label="Previous slide"
+          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 bg-white/10 text-white p-2 sm:p-3 rounded-full hover:bg-white/20 transition-all backdrop-blur-lg border border-white/10"
           disabled={isTransitioning}
         >
           <svg
@@ -360,7 +324,7 @@ const ImageSlider = () => {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 transition-transform duration-300 hover:scale-125"
+            className="w-5 h-5 sm:w-6 sm:h-6"
           >
             <path
               strokeLinecap="round"
@@ -369,11 +333,9 @@ const ImageSlider = () => {
             />
           </svg>
         </button>
-
         <button
           onClick={nextSlide}
-          className="absolute right-2 cursor-pointer sm:right-4 top-1/2 -translate-y-1/2 z-20 bg-white/10 text-white p-2 sm:p-3 rounded-full hover:bg-white/20 transition-all duration-300 backdrop-blur-lg border border-white/10 hover:border-white/20 shadow-lg hover:shadow-xl hover:scale-110 active:scale-95 disabled:opacity-50"
-          aria-label="Next slide"
+          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 bg-white/10 text-white p-2 sm:p-3 rounded-full hover:bg-white/20 transition-all backdrop-blur-lg border border-white/10"
           disabled={isTransitioning}
         >
           <svg
@@ -382,7 +344,7 @@ const ImageSlider = () => {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 transition-transform duration-300 hover:scale-125"
+            className="w-5 h-5 sm:w-6 sm:h-6"
           >
             <path
               strokeLinecap="round"
@@ -392,28 +354,22 @@ const ImageSlider = () => {
           </svg>
         </button>
 
-        {/* Slide Dot Indicators */}
-        <div className="absolute bottom-6 left-0 right-0 flex justify-center items-center z-20 space-x-2 md:space-x-3">
-          {slides.map((slide, slideIndex) => (
+        {/* Slide Dots */}
+        <div className="absolute bottom-6 left-0 right-0 flex justify-center z-20 space-x-2">
+          {slides.map((_, i) => (
             <button
-              key={slide.id}
-              onClick={() => goToSlide(slideIndex)}
-              className={`relative rounded-full transition-all duration-500 ease-out ${
-                currentIndex === slideIndex
-                  ? "w-6 h-2 md:w-8 md:h-2 bg-white shadow-[0_0_10px_2px_rgba(255,255,255,0.5)]"
-                  : "w-2 h-2 md:w-3 md:h-3 bg-white/50 hover:bg-white/70 hover:shadow-[0_0_8px_1px_rgba(255,255,255,0.3)]"
+              key={i}
+              onClick={() => goToSlide(i)}
+              className={`rounded-full transition-all ${
+                currentIndex === i
+                  ? "w-6 h-2 bg-white shadow-[0_0_10px_2px_rgba(255,255,255,0.5)]"
+                  : "w-2 h-2 bg-white/50 hover:bg-white/70"
               }`}
-              aria-label={`Go to slide ${slideIndex + 1}`}
-              disabled={isTransitioning}
-            >
-              {currentIndex === slideIndex && (
-                <span className="absolute top-0 left-0 h-full bg-white/30 rounded-full animate-pulse duration-1000" />
-              )}
-            </button>
+            />
           ))}
         </div>
 
-        {/* Add custom animation to Tailwind config */}
+        {/* Animations */}
         <style jsx global>{`
           @keyframes fadeInScale {
             from {
@@ -426,9 +382,8 @@ const ImageSlider = () => {
             }
           }
           .animate-fadeInScale {
-            animation: fadeInScale 800ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            animation: fadeInScale 800ms ease forwards;
           }
-
           @keyframes textGlow {
             0% {
               text-shadow: 0 0 5px rgba(255, 255, 255, 0.5),

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Search, User, ShoppingBag } from "lucide-react";
+import { ChevronDown, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
